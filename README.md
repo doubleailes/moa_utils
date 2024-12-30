@@ -5,7 +5,7 @@ Amd also a command line to test your abilities to calculate MOA with a quizz.
 
 ## moa_calculation
 
-[moa_calculation](moa_calulation/README.md)
+[moa_calculation](moa_calculation/README.md)
 
 ## moa_quizz
 
