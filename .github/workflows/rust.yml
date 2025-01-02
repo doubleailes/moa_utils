@@ -1,0 +1,75 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [created]
+
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: 🔨 Build
+        run: cargo build
+      - name: ✔️ Tests
+        run: cargo test
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: ⏲️ Bench
+        run: cargo bench
+  dry_publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
+    - uses: katyo/publish-crates@v2
+      with:
+          dry-run: true
+  publish:
+    runs-on: ubuntu-latest
+    needs: [dry_publish,build_test,build-doc-draft]
+    if: github.event_name == 'release' && github.event.action == 'created'
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
+    - uses: katyo/publish-crates@v2
+      with:
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+  release:
+    runs-on: ubuntu-latest
+    name: release ${{ matrix.target }}
+    if: github.event_name == 'release' && github.event.action == 'created'
+    needs: [dry_publish,build_test,build-doc-draft]
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64-pc-windows-gnu, x86_64-unknown-linux-musl, x86_64-apple-darwin]
+    steps:
+      - uses: actions/checkout@master
+      - name: Compile and release
+        uses: rust-build/rust-build.action@v1.4.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          RUSTTARGET: ${{ matrix.target }}
+          EXTRA_FILES: "README.md LICENSE"
+          TOOLCHAIN_VERSION: 1.83
