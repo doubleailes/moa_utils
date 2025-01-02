@@ -42,8 +42,8 @@ impl MOADD {
     }
     /// Create a new MOADD from a given moa and distance (both in `m`).
     pub fn new_from_moa_distance(moa: f64, distance: f64) -> Self {
-        let moa_in_radians = (PI / 180.0) * (moa / 60.0);
-        let drop = distance * moa_in_radians.tan();
+        let moa_in_radians: f64 = (PI / 180.0) * (moa / 60.0);
+        let drop: f64 = distance * moa_in_radians.tan();
         MOADD {
             moa,
             distance,
