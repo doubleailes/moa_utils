@@ -1,4 +1,4 @@
-use angle_calculation::MOADD;
+use angle_calculation::{MOADD, MRADDD};
 use clap::Parser;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
@@ -7,9 +7,15 @@ use std::io;
 
 #[derive(clap::ValueEnum, Clone, Debug, Copy)]
 enum Mode {
-    Moa,
+    Angle,
     Drop,
     Random,
+}
+
+#[derive(clap::ValueEnum, Clone, Debug, Copy)]
+enum Unit {
+    Moa,
+    Mrad,
 }
 
 #[derive(Parser, Debug)]
@@ -21,6 +27,8 @@ struct Args {
     tolerance: f64,
     #[clap(short, long, default_value = "10")]
     number_of_questions: u32,
+    #[clap(short, long, default_value = "Moa")]
+    unit: Unit,
 }
 
 fn get_random_element<T: Copy>(elements: &[T]) -> T {
@@ -63,50 +71,75 @@ fn check_answer<T: std::str::FromStr + std::fmt::Display>(
     }
 }
 
-fn distance_moa(tolerance: f64) -> bool {
+fn distance_moa(tolerance: f64, unit: Unit) -> bool {
     let moa: f64 = get_random_moa();
     let distance: f64 = get_random_distance();
-    let drop: f64 = MOADD::new_from_moa_distance(moa, distance).get_drop_in_cm();
-    println!("Distance: {} meters", distance);
-    println!("MOA: {}", moa);
-    check_answer::<f64>("Find in cm drop: ", drop, tolerance)
+    match unit {
+        Unit::Moa => {
+            let drop: f64 = MOADD::new_from_moa_distance(moa, distance).get_drop_in_cm();
+            println!("Distance: {} meters", distance);
+            println!("MOA: {}", moa);
+            check_answer::<f64>("Find in cm drop: ", drop, tolerance)
+        }
+        Unit::Mrad => {
+            let drop: f64 = MRADDD::new_from_mrad_distance(moa, distance).get_drop_in_cm();
+            println!("Distance: {} meters", distance);
+            println!("MRAD: {}", moa);
+            check_answer::<f64>("Find in cm drop: ", drop, tolerance)
+        }
+    }
 }
 
-fn distance_cm(tolerance: f64) -> bool {
+fn distance_cm(tolerance: f64, unit: Unit) -> bool {
     let drop: f64 = get_random_drop();
     let distance: f64 = get_random_distance();
-    let moa = MOADD::new_from_drop_distance(drop / 100.0, distance).get_moa();
-    println!("Distance: {} meters", distance);
-    println!("Drop: {} cm", drop);
-    check_answer::<f64>("Find MOA: ", moa, tolerance)
+    match unit {
+        Unit::Moa => {
+            let moa: f64 = MOADD::new_from_drop_distance(drop / 100.0, distance).get_moa();
+            println!("Distance: {} meters", distance);
+            println!("Drop: {} cm", drop);
+            check_answer::<f64>("Find MOA: ", moa, tolerance)
+        }
+        Unit::Mrad => {
+            let moa: f64 = MRADDD::new_from_drop_distance(drop / 100.0, distance).get_mrad();
+            println!("Distance: {} meters", distance);
+            println!("Drop: {} cm", drop);
+            check_answer::<f64>("Find MRAD: ", moa, tolerance)
+        }
+    }
 }
 
-fn quizz(mode: Mode, tolerance: f64, number_of_questions: u32) {
+struct QuizzOptions {
+    mode: Mode,
+    unit: Unit,
+}
+
+fn quizz(quizzopt: QuizzOptions, tolerance: f64, number_of_questions: u32) {
     let mut score = 0;
     for _ in 0..number_of_questions {
         println!("== Question {}/{} ==", score + 1, number_of_questions);
-        match mode {
-            Mode::Moa => {
-                if distance_moa(tolerance) {
+        match quizzopt.mode {
+            Mode::Angle => {
+                if distance_moa(tolerance, quizzopt.unit) {
                     score += 1;
                 }
             }
             Mode::Drop => {
-                if distance_cm(tolerance) {
+                if distance_cm(tolerance, quizzopt.unit) {
                     score += 1;
                 }
             }
             Mode::Random => {
-                let modes: [Mode; 2] = [Mode::Moa, Mode::Drop];
+                let modes: [Mode; 2] = [Mode::Angle, Mode::Drop];
                 let mode: Mode = get_random_element(&modes);
                 match mode {
-                    Mode::Moa => {
-                        if distance_moa(tolerance) {
+                    Mode::Angle => {
+                        if distance_moa(tolerance, quizzopt.unit) {
                             score += 1;
                         }
                     }
                     Mode::Drop => {
-                        if distance_cm(tolerance) {
+                        if distance_cm(tolerance, quizzopt.unit) {
                             score += 1;
                         }
                     }
@@ -120,5 +153,9 @@ fn quizz(mode: Mode, tolerance: f64, number_of_questions: u32) {
 
 fn main() {
     let args: Args = Args::parse();
-    quizz(args.mode, args.tolerance, args.number_of_questions);
+    let quizzopt = QuizzOptions {
+        mode: args.mode,
+        unit: args.unit,
+    };
+    quizz(quizzopt, args.tolerance, args.number_of_questions);
 }
