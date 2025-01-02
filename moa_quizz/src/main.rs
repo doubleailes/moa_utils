@@ -50,7 +50,7 @@ fn get_random_moa() -> f64 {
 
 fn get_random_drop(signed: bool) -> f64 {
     if signed {
-        let drops: [f64; 11] = [-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
+        let drops: [f64; 9] = [-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0];
         get_random_element(&drops)
     } else {
         let drops: [f64; 10] = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
@@ -106,13 +106,42 @@ fn distance_cm(tolerance: f64, unit: Unit) -> bool {
     check_answer::<f64>("Find MOA: ", angle, tolerance)
 }
 
+fn distance_target(tolerance: f64, unit: Unit) -> bool {
+    let distance: f64 = get_random_distance();
+    println!("Distance: {} meters", distance);
+    let x = get_random_drop(true);
+    let y = get_random_drop(true);
+    println!(
+        "Find the impact point of a shot with a drop of x {} cm and y {} cm",
+        x, y
+    );
+    let target = Target::new(x + 4.0, y + 4.0);
+    println!("{}", target);
+    match unit {
+        Unit::Moa => {
+            let moa_x: f64 = MOADD::new_from_drop_distance(x / 100.0, distance).get_moa();
+            let moa_y: f64 = MOADD::new_from_drop_distance(y / 100.0, distance).get_moa();
+            let scrore_x = check_answer::<f64>("Find x: ", moa_x * -1.0, tolerance);
+            let score_y = check_answer::<f64>("Find y: ", moa_y * -1.0, tolerance);
+            scrore_x && score_y
+        }
+        Unit::Mrad => {
+            let mrad_x: f64 = MRADDD::new_from_drop_distance(x / 100.0, distance).get_mrad();
+            let mrad_y: f64 = MRADDD::new_from_drop_distance(y / 100.0, distance).get_mrad();
+            let scrore_x = check_answer::<f64>("Find x: ", mrad_x * -1.0, tolerance);
+            let score_y = check_answer::<f64>("Find y: ", mrad_y * -1.0, tolerance);
+            scrore_x && score_y
+        }
+    }
+}
+
 struct QuizzOptions {
     mode: Mode,
     unit: Unit,
 }
 
 fn quizz(quizzopt: QuizzOptions, tolerance: f64, number_of_questions: u32) {
-    let mut score = 0;
+    let mut score: u16 = 0;
     for _ in 0..number_of_questions {
         println!("== Question {}/{} ==", score + 1, number_of_questions);
         match quizzopt.mode {
@@ -144,10 +173,10 @@ fn quizz(quizzopt: QuizzOptions, tolerance: f64, number_of_questions: u32) {
                 }
             }
             Mode::Target => {
-                let x = get_random_drop(true);
-                let y = get_random_drop(true);
-                let target = Target::new(x, y);
-                println!("{}", target);
+
+                if distance_target(tolerance, quizzopt.unit) {
+                    score += 1;
+                }
             }
         }
     }
