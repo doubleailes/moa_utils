@@ -1,5 +1,5 @@
-use clap::Parser;
 use angle_calculation::MOADD;
+use clap::Parser;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
