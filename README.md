@@ -1,7 +1,7 @@
 # MOA Utils
 
-This repository provides utilities for calculating the Minute of Angle (MOA) for a given drop (in cm) and distance (in meters), as well as calculating the drop (in cm) for a given MOA and distance (in meters).
-Amd also a command line to test your abilities to calculate MOA with a quizz.
+This repository provides utilities for calculating the Agnle in MOA or MRAD for a given drop (in m) and distance (in `m`), as well as calculating the drop (in `m`) for a given Angle and distance (in `m`).
+Amd also a command line to test your abilities to calculate Angles and Drop with a quizz.
 
 ## angle_calculation
 
