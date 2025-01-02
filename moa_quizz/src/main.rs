@@ -1,5 +1,6 @@
 use angle_calculation::{MOADD, MRADDD};
 use clap::Parser;
+use moa_quizz::Target;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
@@ -10,6 +11,7 @@ enum Mode {
     Angle,
     Drop,
     Random,
+    Target,
 }
 
 #[derive(clap::ValueEnum, Clone, Debug, Copy)]
@@ -46,9 +48,14 @@ fn get_random_moa() -> f64 {
     get_random_element(&moas)
 }
 
-fn get_random_drop() -> f64 {
-    let drops: [f64; 4] = [0.5, 1.0, 2.0, 5.0];
-    get_random_element(&drops)
+fn get_random_drop(signed: bool) -> f64 {
+    if signed {
+        let drops: [f64; 11] = [-5.0, -4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
+        get_random_element(&drops)
+    } else {
+        let drops: [f64; 10] = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+        get_random_element(&drops)
+    }
 }
 
 fn check_answer<T: std::str::FromStr + std::fmt::Display>(
@@ -91,7 +98,7 @@ fn distance_moa(tolerance: f64, unit: Unit) -> bool {
 }
 
 fn distance_cm(tolerance: f64, unit: Unit) -> bool {
-    let drop: f64 = get_random_drop();
+    let drop: f64 = get_random_drop(false);
     let distance: f64 = get_random_distance();
     match unit {
         Unit::Moa => {
@@ -145,6 +152,12 @@ fn quizz(quizzopt: QuizzOptions, tolerance: f64, number_of_questions: u32) {
                     }
                     _ => {}
                 }
+            }
+            Mode::Target => {
+                let x = get_random_drop(true);
+                let y = get_random_drop(true);
+                let target = Target::new(x, y);
+                println!("{}", target);
             }
         }
     }
