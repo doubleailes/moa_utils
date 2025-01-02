@@ -1,12 +1,12 @@
 /// # MRADDD
 /// A struct that guaranty the MRAD (Milliradian) and drop of a bullet given a distance.
-/// 
+///
 /// ## Fields
-/// 
+///
 /// - The MRAD is the angle in radians that subtends a circle of 1 milliradian.
 /// - The drop is the vertical distance between the point of aim and the point of impact in `m`.
 /// - The distance is the distance between the shooter and the target in `m`.
-/// 
+///
 /// # Examples
 /// ```
 /// use angle_calculation::MRADDD;
@@ -21,7 +21,7 @@ pub struct MRADDD {
     drop: f64,
 }
 
-impl MRADDD{
+impl MRADDD {
     pub fn get_mrad(&self) -> f64 {
         self.mrad
     }
@@ -35,7 +35,7 @@ impl MRADDD{
         self.distance
     }
     pub fn new_from_mrad_distance(mrad: f64, distance: f64) -> Self {
-        let drop = distance * (mrad/1000.0).tan();
+        let drop = distance * (mrad / 1000.0).tan();
         MRADDD {
             mrad,
             distance,
