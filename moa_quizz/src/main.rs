@@ -121,16 +121,16 @@ fn distance_target(tolerance: f64, unit: Unit) -> bool {
         Unit::Moa => {
             let moa_x: f64 = MOADD::new_from_drop_distance(x / 100.0, distance).get_moa();
             let moa_y: f64 = MOADD::new_from_drop_distance(y / 100.0, distance).get_moa();
-            let scrore_x = check_answer::<f64>("Find x: ", moa_x * -1.0, tolerance);
+            let score_x = check_answer::<f64>("Find x: ", moa_x * -1.0, tolerance);
             let score_y = check_answer::<f64>("Find y: ", moa_y * -1.0, tolerance);
-            scrore_x && score_y
+            score_x && score_y
         }
         Unit::Mrad => {
             let mrad_x: f64 = MRADDD::new_from_drop_distance(x / 100.0, distance).get_mrad();
             let mrad_y: f64 = MRADDD::new_from_drop_distance(y / 100.0, distance).get_mrad();
-            let scrore_x = check_answer::<f64>("Find x: ", mrad_x * -1.0, tolerance);
+            let score_x = check_answer::<f64>("Find x: ", mrad_x * -1.0, tolerance);
             let score_y = check_answer::<f64>("Find y: ", mrad_y * -1.0, tolerance);
-            scrore_x && score_y
+            score_x && score_y
         }
     }
 }
