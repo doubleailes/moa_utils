@@ -16,7 +16,9 @@ impl Grid {
 }
 
 pub struct Target {
+    #[allow(dead_code)]
     x: f64,
+    #[allow(dead_code)]
     y: f64,
     grid: Grid,
 }
