@@ -9,7 +9,7 @@
 /// 
 /// # Examples
 /// ```
-/// use moa_calculation::MRADDD;
+/// use angle_calculation::MRADDD;
 /// let computed_drop: f64 = MRADDD::new_from_mrad_distance(1.0, 100.0).get_drop_in_cm();
 /// assert_eq!(computed_drop, 10.000003333334668);
 /// let computed_mrad: f64 = MRADDD::new_from_drop_distance(0.1, 100.0).get_mrad();

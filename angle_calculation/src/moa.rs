@@ -11,7 +11,7 @@ use std::f64::consts::PI;
 ///
 /// # Examples
 /// ```
-/// use moa_calculation::MOADD;
+/// use angle_calculation::MOADD;
 /// let computed_drop: f64 = MOADD::new_from_moa_distance(0.2, 100.0).get_drop_in_cm();
 /// assert_eq!(computed_drop, 0.5817764179878108);
 /// let computed_moa: f64 = MOADD::new_from_drop_distance(0.05, 100.0).get_moa();

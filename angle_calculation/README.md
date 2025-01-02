@@ -4,12 +4,12 @@ This library provides utilities for calculating the Minute of Angle (MOA) for a 
 
 ## Usage
 
-`cargo add moa_calculation`
+`cargo add angle_calculation`
 
 ## Examples
 
 ```rust
-use moa_calculation::moa_calculation;
+use angle_calculation::angle_calculation;
 
 let drop = 10.0;
 let distance = 100.0;
