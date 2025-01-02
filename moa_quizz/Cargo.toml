@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.23", features = ["derive"] }
-moa_calculation = { path = "../moa_calculation" }
+angle_calculation = { path = "../angle_calculation" }
 rand = "0.8"
