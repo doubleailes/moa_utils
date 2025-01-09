@@ -1,4 +1,4 @@
-use angle_calculation::{MOADD, MRADDD};
+use angle_calculation::{AngleType, ADD};
 use clap::Parser;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
@@ -12,12 +12,6 @@ enum Mode {
     Random,
 }
 
-#[derive(clap::ValueEnum, Clone, Debug, Copy)]
-enum Unit {
-    Moa,
-    Mrad,
-}
-
 #[derive(Parser, Debug)]
 #[clap(version)]
 struct Args {
@@ -28,7 +22,7 @@ struct Args {
     #[clap(short, long, default_value = "10")]
     number_of_questions: u32,
     #[clap(short, long, default_value = "Moa")]
-    unit: Unit,
+    unit: AngleType,
 }
 
 fn get_random_element<T: Copy>(elements: &[T]) -> T {
@@ -71,23 +65,13 @@ fn check_answer<T: std::str::FromStr + std::fmt::Display>(
     }
 }
 
-fn distance_moa(tolerance: f64, unit: Unit) -> bool {
+fn distance_moa(tolerance: f64, unit: AngleType) -> bool {
     let moa: f64 = get_random_moa();
     let distance: f64 = get_random_distance();
-    match unit {
-        Unit::Moa => {
-            let drop: f64 = MOADD::new_from_moa_distance(moa, distance).get_drop_in_cm();
-            println!("Distance: {} meters", distance);
-            println!("MOA: {}", moa);
-            check_answer::<f64>("Find in cm drop: ", drop, tolerance)
-        }
-        Unit::Mrad => {
-            let drop: f64 = MRADDD::new_from_mrad_distance(moa, distance).get_drop_in_cm();
-            println!("Distance: {} meters", distance);
-            println!("MRAD: {}", moa);
-            check_answer::<f64>("Find in cm drop: ", drop, tolerance)
-        }
-    }
+    let drop: f64 = ADD::new_from_angle_distance(unit, distance).get_drop_in_cm();
+    println!("Distance: {} meters", distance);
+    println!("MOA: {}", moa);
+    check_answer::<f64>("Find in cm drop: ", drop, tolerance)
 }
 
 fn distance_cm(tolerance: f64, unit: Unit) -> bool {
@@ -111,7 +95,7 @@ fn distance_cm(tolerance: f64, unit: Unit) -> bool {
 
 struct QuizzOptions {
     mode: Mode,
-    unit: Unit,
+    unit: AngleType,
 }
 
 fn quizz(quizzopt: QuizzOptions, tolerance: f64, number_of_questions: u32) {
