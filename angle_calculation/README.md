@@ -18,7 +18,7 @@ use angle_calculation::AngleDropDistance;
 let drop = 0.1;
 let distance = 100.0;
 
-let add: AngleDropDistance = AngleDropDistance::new_from_drop_distance(drop, distance);
+let add: AngleDropDistance = AngleDropDistance::from_drop_distance(drop, distance);
 let moa = add.get_angle().get_moa();
 println!("MOA: {}", MOA);
 let mrad = add.get_angle().get_mrad();
