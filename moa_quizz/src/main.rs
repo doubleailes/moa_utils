@@ -74,12 +74,13 @@ fn check_answer<T: std::str::FromStr + std::fmt::Display>(
 fn distance_moa(tolerance: f64, unit: Unit) -> bool {
     let moa: f64 = get_random_moa();
     let distance: f64 = get_random_distance();
-    let drop: f64 = match unit {
-        Unit::Moa => AngleDropDistance::new_from_angle_distance(AngleType::MOA(moa), distance)
-            .get_drop_in_cm(),
-        Unit::Mrad => AngleDropDistance::new_from_angle_distance(AngleType::MIL(moa), distance)
-            .get_drop_in_cm(),
-    };
+    let drop: f64 =
+        match unit {
+            Unit::Moa => AngleDropDistance::from_angle_distance(AngleType::MOA(moa), distance)
+                .get_drop_in_cm(),
+            Unit::Mrad => AngleDropDistance::from_angle_distance(AngleType::MIL(moa), distance)
+                .get_drop_in_cm(),
+        };
     println!("Distance: {} meters", distance);
     println!("MOA: {}", moa);
     check_answer::<f64>("Find in cm drop: ", drop, tolerance)
@@ -88,7 +89,7 @@ fn distance_moa(tolerance: f64, unit: Unit) -> bool {
 fn distance_cm(tolerance: f64, unit: Unit) -> bool {
     let drop: f64 = get_random_drop();
     let distance: f64 = get_random_distance();
-    let angle_raw = AngleDropDistance::new_from_drop_distance(drop / 100.0, distance).get_angle();
+    let angle_raw = AngleDropDistance::from_drop_distance(drop / 100.0, distance).get_angle();
     let angle: f64 = match unit {
         Unit::Moa => angle_raw.get_moa(),
         Unit::Mrad => angle_raw.get_mrad(),

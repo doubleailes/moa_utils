@@ -58,7 +58,7 @@ impl AngleDropDistance {
     pub fn get_drop_in_cm(&self) -> f64 {
         self.drop * 100.0
     }
-    pub fn new_from_angle_distance(angle: AngleType, distance: f64) -> Self {
+    pub fn from_angle_distance(angle: AngleType, distance: f64) -> Self {
         let drop = distance * angle.get_mrad().tan();
         AngleDropDistance {
             angle,
@@ -66,7 +66,7 @@ impl AngleDropDistance {
             drop,
         }
     }
-    pub fn new_from_drop_distance(drop: f64, distance: f64) -> Self {
+    pub fn from_drop_distance(drop: f64, distance: f64) -> Self {
         let mrad: f64 = (drop / distance).atan() * 1000.0;
         let angle = AngleType::MIL(mrad);
         AngleDropDistance {
@@ -98,20 +98,20 @@ mod tests {
     }
 
     #[test]
-    fn test_new_from_angle_distance() {
+    fn test_from_angle_distance() {
         let angle = AngleType::MOA(1.0);
         let distance = 100.0;
-        let add = AngleDropDistance::new_from_angle_distance(angle, distance);
+        let add = AngleDropDistance::from_angle_distance(angle, distance);
         assert_eq!(add.get_angle(), angle);
         assert_eq!(add.get_distance(), distance);
         assert!((add.get_drop() - (distance * angle.get_mrad().tan())).abs() < f64::EPSILON);
     }
 
     #[test]
-    fn test_new_from_drop_distance() {
+    fn test_from_drop_distance() {
         let drop = 1.0;
         let distance = 100.0;
-        let add = AngleDropDistance::new_from_drop_distance(drop, distance);
+        let add = AngleDropDistance::from_drop_distance(drop, distance);
         let expected_angle = AngleType::MIL((drop / distance).atan() * 1000.0);
         assert_eq!(add.get_angle(), expected_angle);
         assert_eq!(add.get_distance(), distance);
@@ -122,7 +122,7 @@ mod tests {
     fn test_get_drop_in_cm() {
         let angle = AngleType::MOA(1.0);
         let distance = 100.0;
-        let add = AngleDropDistance::new_from_angle_distance(angle, distance);
+        let add = AngleDropDistance::from_angle_distance(angle, distance);
         assert_eq!(add.get_drop_in_cm(), add.get_drop() * 100.0);
     }
 }
