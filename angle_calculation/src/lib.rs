@@ -1,13 +1,13 @@
 use std::f64::consts::PI;
 
-/// # MOAngleDropDistance
+/// # AngleDropDistance
 /// A struct that guaranty the MOA (Minute of Angle) and drop of a bullet given a distance.
 ///
 /// ## Fields
 ///
-/// - The MOA is the angle in degrees that subtends a circle of 1 minute of arc.
-/// - The drop is the vertical distance between the point of aim and the point of impact in `m`.
-/// - The distance is the distance between the shooter and the target in `m`.
+/// - The **angle** is the angle in degrees that subtends a circle of 1 minute of arc.
+/// - The **drop** is the vertical distance between the point of aim and the point of impact in `m`.
+/// - The **distance** is the distance between the shooter and the target in `m`.
 ///
 pub struct AngleDropDistance {
     angle: AngleType,
@@ -15,9 +15,16 @@ pub struct AngleDropDistance {
     drop: f64,
 }
 
-const MOA_TO_RAD: f64 = 1000.0 * PI / (180.0 * 60.0);
+const MOA_TO_RAD: f64 = 1000.000000000000000000 * PI / (180.0000000000000000 * 60.0000000000000000);
 
-#[derive(Debug, Clone, Copy)]
+/// # AngleType
+/// An enum that represents the type of angle used in the calculation.
+///
+/// ## Variants
+///
+/// - **MOA** : The angle is in Minute of Angle. ( 1/60 of a degree )
+/// - **MIL** : The angle is in Milliradian. ( 1/1000 of a radian )
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AngleType {
     MOA(f64),
     MIL(f64),
@@ -67,5 +74,55 @@ impl AngleDropDistance {
             distance,
             drop,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_moa() {
+        let angle_moa = AngleType::MOA(1.0);
+        let angle_mil = AngleType::MIL(1.0);
+        assert_eq!(angle_moa.get_moa(), 1.0);
+        assert!((angle_mil.get_moa() - (1.0 / MOA_TO_RAD)).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn test_get_mrad() {
+        let angle_moa = AngleType::MOA(1.0);
+        let angle_mil = AngleType::MIL(1.0);
+        assert!((angle_moa.get_mrad() - (1.0 * MOA_TO_RAD)).abs() < f64::EPSILON);
+        assert_eq!(angle_mil.get_mrad(), 1.0);
+    }
+
+    #[test]
+    fn test_new_from_angle_distance() {
+        let angle = AngleType::MOA(1.0);
+        let distance = 100.0;
+        let add = AngleDropDistance::new_from_angle_distance(angle, distance);
+        assert_eq!(add.get_angle(), angle);
+        assert_eq!(add.get_distance(), distance);
+        assert!((add.get_drop() - (distance * angle.get_mrad().tan())).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn test_new_from_drop_distance() {
+        let drop = 1.0;
+        let distance = 100.0;
+        let add = AngleDropDistance::new_from_drop_distance(drop, distance);
+        let expected_angle = AngleType::MIL((drop / distance).atan() * 1000.0);
+        assert_eq!(add.get_angle(), expected_angle);
+        assert_eq!(add.get_distance(), distance);
+        assert_eq!(add.get_drop(), drop);
+    }
+
+    #[test]
+    fn test_get_drop_in_cm() {
+        let angle = AngleType::MOA(1.0);
+        let distance = 100.0;
+        let add = AngleDropDistance::new_from_angle_distance(angle, distance);
+        assert_eq!(add.get_drop_in_cm(), add.get_drop() * 100.0);
     }
 }

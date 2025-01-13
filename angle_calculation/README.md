@@ -10,28 +10,17 @@ The system assumes everything is in meters.
 
 ## Examples
 
-### Calculate angle from MOA
+### Calculate angle
 
 ```rust
-use angle_calculation::MOAngleDropDistance;
+use angle_calculation::AngleDropDistance;
 
 let drop = 0.1;
 let distance = 100.0;
 
-let MOA_struct = MOAngleDropDistance::new_from_drop_distance(drop, distance);
-let MOA = MOA_struct.get_moa();
+let add: AngleDropDistance = AngleDropDistance::new_from_drop_distance(drop, distance);
+let moa = add.get_angle().get_moa();
 println!("MOA: {}", MOA);
-```
-
-### Calculate angle from MRAD
-
-```rust
-use angle_calculation::MRAngleDropDistanceD;
-
-let drop = 0.1;
-let distance = 100.0;
-
-let MRAD_struct = MRAngleDropDistanceD::new_from_drop_distance(drop, distance);
-let MRAD = MRAD_struct.get_mrad();
-println!("MRAD: {}", MRAD);
+let mrad = add.get_angle().get_mrad();
+println!("MRAD: {}", mrad);
 ```
