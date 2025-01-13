@@ -1,4 +1,4 @@
-use angle_calculation::{AngleType, ADD};
+use angle_calculation::{AngleDropDistance, AngleType};
 use clap::Parser;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
@@ -12,6 +12,12 @@ enum Mode {
     Random,
 }
 
+#[derive(clap::ValueEnum, Clone, Debug, Copy)]
+enum Unit {
+    Moa,
+    Mrad,
+}
+
 #[derive(Parser, Debug)]
 #[clap(version)]
 struct Args {
@@ -22,7 +28,7 @@ struct Args {
     #[clap(short, long, default_value = "10")]
     number_of_questions: u32,
     #[clap(short, long, default_value = "Moa")]
-    unit: AngleType,
+    unit: Unit,
 }
 
 fn get_random_element<T: Copy>(elements: &[T]) -> T {
@@ -65,10 +71,15 @@ fn check_answer<T: std::str::FromStr + std::fmt::Display>(
     }
 }
 
-fn distance_moa(tolerance: f64, unit: AngleType) -> bool {
+fn distance_moa(tolerance: f64, unit: Unit) -> bool {
     let moa: f64 = get_random_moa();
     let distance: f64 = get_random_distance();
-    let drop: f64 = ADD::new_from_angle_distance(unit, distance).get_drop_in_cm();
+    let drop: f64 = match unit {
+        Unit::Moa => AngleDropDistance::new_from_angle_distance(AngleType::MOA(moa), distance)
+            .get_drop_in_cm(),
+        Unit::Mrad => AngleDropDistance::new_from_angle_distance(AngleType::MIL(moa), distance)
+            .get_drop_in_cm(),
+    };
     println!("Distance: {} meters", distance);
     println!("MOA: {}", moa);
     check_answer::<f64>("Find in cm drop: ", drop, tolerance)
@@ -77,25 +88,19 @@ fn distance_moa(tolerance: f64, unit: AngleType) -> bool {
 fn distance_cm(tolerance: f64, unit: Unit) -> bool {
     let drop: f64 = get_random_drop();
     let distance: f64 = get_random_distance();
-    match unit {
-        Unit::Moa => {
-            let moa: f64 = MOADD::new_from_drop_distance(drop / 100.0, distance).get_moa();
-            println!("Distance: {} meters", distance);
-            println!("Drop: {} cm", drop);
-            check_answer::<f64>("Find MOA: ", moa, tolerance)
-        }
-        Unit::Mrad => {
-            let moa: f64 = MRADDD::new_from_drop_distance(drop / 100.0, distance).get_mrad();
-            println!("Distance: {} meters", distance);
-            println!("Drop: {} cm", drop);
-            check_answer::<f64>("Find MRAD: ", moa, tolerance)
-        }
-    }
+    let angle_raw = AngleDropDistance::new_from_drop_distance(drop / 100.0, distance).get_angle();
+    let angle: f64 = match unit {
+        Unit::Moa => angle_raw.get_moa(),
+        Unit::Mrad => angle_raw.get_mrad(),
+    };
+    println!("Distance: {} meters", distance);
+    println!("Drop: {} cm", drop);
+    check_answer::<f64>("Find MOA: ", angle, tolerance)
 }
 
 struct QuizzOptions {
     mode: Mode,
-    unit: AngleType,
+    unit: Unit,
 }
 
 fn quizz(quizzopt: QuizzOptions, tolerance: f64, number_of_questions: u32) {
