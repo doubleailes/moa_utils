@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-/// # MOADD
+/// # MOAngleDropDistance
 /// A struct that guaranty the MOA (Minute of Angle) and drop of a bullet given a distance.
 ///
 /// ## Fields
@@ -9,7 +9,7 @@ use std::f64::consts::PI;
 /// - The drop is the vertical distance between the point of aim and the point of impact in `m`.
 /// - The distance is the distance between the shooter and the target in `m`.
 ///
-pub struct ADD {
+pub struct AngleDropDistance {
     angle: AngleType,
     distance: f64,
     drop: f64,
@@ -38,7 +38,7 @@ impl AngleType {
     }
 }
 
-impl ADD {
+impl AngleDropDistance {
     pub fn get_angle(&self) -> AngleType {
         self.angle
     }
@@ -53,7 +53,7 @@ impl ADD {
     }
     pub fn new_from_angle_distance(angle: AngleType, distance: f64) -> Self {
         let drop = distance * angle.get_mrad().tan();
-        ADD {
+        AngleDropDistance {
             angle,
             distance,
             drop,
@@ -62,7 +62,7 @@ impl ADD {
     pub fn new_from_drop_distance(drop: f64, distance: f64) -> Self {
         let mrad: f64 = (drop / distance).atan() * 1000.0;
         let angle = AngleType::MIL(mrad);
-        ADD {
+        AngleDropDistance {
             angle,
             distance,
             drop,
