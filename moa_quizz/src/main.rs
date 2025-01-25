@@ -107,27 +107,38 @@ fn distance_cm(tolerance: f64, unit: Unit) -> bool {
 }
 
 fn distance_target(tolerance: f64, unit: Unit) -> bool {
-    let distance: f64 = get_random_distance();
+    // 1) Generate random distance and drops (in cm).
+    let distance = get_random_distance();
+    let (x, y) = (get_random_drop(true), get_random_drop(true));
+
     println!("Distance: {} meters", distance);
-    let x = get_random_drop(true);
-    let y = get_random_drop(true);
     println!(
         "Find the impact point of a shot with a drop of x {} cm and y {} cm",
         x, y
     );
-    // The grid 9 x 9, we offset of 4.0 unit to recenter
+
+    // 2) Create and display the target with a 9x9 grid offset of 4.0 units.
     let target = Target::new(x + 4.0, y + 4.0);
     println!("{}", target);
-    // The input is exepected in cm so we divide by 100
-    let angle_x: AngleType = AngleDropDistance::from_drop_distance(x / 100.0, distance).get_angle();
-    let angle_y: AngleType = AngleDropDistance::from_drop_distance(y / 100.0, distance).get_angle();
+
+    // 3) Convert drop (cm) to an AngleType for both x and y.
+    //    We divide cm by 100 to get meters.
+    let angle_x = AngleDropDistance::from_drop_distance(x / 100.0, distance).get_angle();
+    let angle_y = AngleDropDistance::from_drop_distance(y / 100.0, distance).get_angle();
+
+    // 4) Depending on the desired unit (MOA or MRAD), retrieve the angles.
     let (expected_x, expected_y) = match unit {
         Unit::Moa => (angle_x.get_moa(), angle_y.get_moa()),
         Unit::Mrad => (angle_x.get_mrad(), angle_y.get_mrad()),
     };
-    check_answer::<f64>("Find x: ", expected_x * -1.0, tolerance)
-        && check_answer::<f64>("Find y: ", expected_y * -1.0, tolerance)
+
+    // 5) Check the user’s answers (negative because we’re adjusting POA).
+    let ok_x = check_answer::<f64>("Find x: ", -expected_x, tolerance);
+    let ok_y = check_answer::<f64>("Find y: ", -expected_y, tolerance);
+
+    ok_x && ok_y
 }
+
 
 struct QuizzOptions {
     mode: Mode,
