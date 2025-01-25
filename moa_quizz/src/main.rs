@@ -58,11 +58,7 @@ fn get_random_drop(signed: bool) -> f64 {
     }
 }
 
-fn check_answer<T: std::str::FromStr + std::fmt::Display>(
-    prompt: &str,
-    correct_value: f64,
-    tolerance: f64,
-) -> bool {
+fn check_answer(prompt: &str, correct_value: f64, tolerance: f64) -> bool {
     println!("{}", prompt);
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
@@ -90,7 +86,7 @@ fn distance_moa(tolerance: f64, unit: Unit) -> bool {
         };
     println!("Distance: {} meters", distance);
     println!("MOA: {}", moa);
-    check_answer::<f64>("Find in cm drop: ", drop, tolerance)
+    check_answer("Find in cm drop: ", drop, tolerance)
 }
 
 fn distance_cm(tolerance: f64, unit: Unit) -> bool {
@@ -103,7 +99,7 @@ fn distance_cm(tolerance: f64, unit: Unit) -> bool {
     };
     println!("Distance: {} meters", distance);
     println!("Drop: {} cm", drop);
-    check_answer::<f64>("Find MOA: ", angle, tolerance)
+    check_answer("Find MOA: ", angle, tolerance)
 }
 
 fn distance_target(tolerance: f64, unit: Unit) -> bool {
@@ -133,12 +129,11 @@ fn distance_target(tolerance: f64, unit: Unit) -> bool {
     };
 
     // 5) Check the user’s answers (negative because we’re adjusting POA).
-    let ok_x = check_answer::<f64>("Find x: ", -expected_x, tolerance);
-    let ok_y = check_answer::<f64>("Find y: ", -expected_y, tolerance);
+    let ok_x = check_answer("Find x: ", -expected_x, tolerance);
+    let ok_y = check_answer("Find y: ", -expected_y, tolerance);
 
     ok_x && ok_y
 }
-
 
 struct QuizzOptions {
     mode: Mode,
