@@ -61,7 +61,10 @@ fn get_random_drop(signed: bool) -> f64 {
 fn check_answer(prompt: &str, correct_value: f64, tolerance: f64) -> bool {
     println!("{}", prompt);
     let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
+    if let Err(e) = io::stdin().read_line(&mut input) {
+        println!("Error reading input: {}", e);
+        return false;
+    }
     let input_value: f64 = input.trim().parse().unwrap();
     if correct_value * (1.0 - tolerance) < input_value
         && input_value < correct_value * (1.0 + tolerance)
