@@ -16,7 +16,7 @@ impl Grid {
 }
 
 /// A simple "target" that manages an internal 9×9 `Grid`.
-/// 
+///
 /// # Details
 ///
 /// The `Target` object stores:
@@ -37,17 +37,17 @@ pub struct Target {
 
 impl Target {
     /// Creates a new `Target` at the specified `(x, y)` coordinates.
-    /// 
+    ///
     /// # Parameters
-    /// 
+    ///
     /// - `x` - The x-coordinate in the grid. Typically in the range `[0.0..8.0]`.
     /// - `y` - The y-coordinate in the grid. Typically in the range `[0.0..8.0]`.
-    /// 
+    ///
     /// # Behavior
     /// - Internally calls `Grid::new()` to initialize a 9×9 grid.
     /// - Marks `'o'` at the center (4,4).
     /// - Calls `set_impact(x, y)` to place `'x'` at the impact coordinates.
-    /// 
+    ///
     /// # Example
     /// ```
     /// use moa_quizz::Target;
