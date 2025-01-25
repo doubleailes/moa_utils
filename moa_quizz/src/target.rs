@@ -15,6 +15,18 @@ impl Grid {
     }
 }
 
+/// A simple "target" that manages an internal 9×9 `Grid`.
+/// 
+/// # Details
+///
+/// The `Target` object stores:
+/// - `x, y` floats, which represent a particular impact location in the grid.
+/// - An internal `Grid`, which is used to display or track that impact visually.
+///
+/// # Usage
+///
+/// 1. Create a new target via `Target::new(x, y)`.
+/// 2. Print or display the target, which will show `'+'` for empty cells, `'o'` for the center, and `'x'` for the impact.
 pub struct Target {
     #[allow(dead_code)]
     x: f64,
@@ -24,6 +36,24 @@ pub struct Target {
 }
 
 impl Target {
+    /// Creates a new `Target` at the specified `(x, y)` coordinates.
+    /// 
+    /// # Parameters
+    /// 
+    /// - `x` - The x-coordinate in the grid. Typically in the range `[0.0..8.0]`.
+    /// - `y` - The y-coordinate in the grid. Typically in the range `[0.0..8.0]`.
+    /// 
+    /// # Behavior
+    /// - Internally calls `Grid::new()` to initialize a 9×9 grid.
+    /// - Marks `'o'` at the center (4,4).
+    /// - Calls `set_impact(x, y)` to place `'x'` at the impact coordinates.
+    /// 
+    /// # Example
+    /// ```
+    /// let target = Target::new(2.0, 3.0);
+    /// println!("{}", target);
+    /// // This will print a grid with 'x' at (2,3) and 'o' at (4,4).
+    /// ```
     pub fn new(x: f64, y: f64) -> Self {
         let mut grid: Grid = Grid::new();
         grid.set_impact(x, y);
