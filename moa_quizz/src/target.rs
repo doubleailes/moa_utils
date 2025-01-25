@@ -50,6 +50,7 @@ impl Target {
     /// 
     /// # Example
     /// ```
+    /// use moa_quizz::Target;
     /// let target = Target::new(2.0, 3.0);
     /// println!("{}", target);
     /// // This will print a grid with 'x' at (2,3) and 'o' at (4,4).
