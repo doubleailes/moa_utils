@@ -120,18 +120,17 @@ fn distance_target(tolerance: f64, unit: Unit) -> bool {
     println!("{}", target);
     let angle_x:AngleType  = AngleDropDistance::from_drop_distance(x / 100.0, distance).get_angle();
     let angle_y:AngleType  = AngleDropDistance::from_drop_distance(y / 100.0, distance).get_angle();
-    match unit {
+    let (expected_x, expected_y) =  match unit {
         Unit::Moa => {
-            let score_x = check_answer::<f64>("Find x: ", angle_x.get_moa() * -1.0, tolerance);
-            let score_y = check_answer::<f64>("Find y: ", angle_y.get_moa() * -1.0, tolerance);
-            score_x && score_y
+            (angle_x.get_moa(), angle_y.get_moa())
         }
         Unit::Mrad => {
-            let score_x = check_answer::<f64>("Find x: ", angle_x.get_mrad() * -1.0, tolerance);
-            let score_y = check_answer::<f64>("Find y: ", angle_y.get_mrad() * -1.0, tolerance);
-            score_x && score_y
+            (angle_x.get_mrad(), angle_y.get_mrad())
         }
-    }
+    };
+    let score_x: bool = check_answer::<f64>("Find x: ", expected_x * -1.0, tolerance);
+    let score_y: bool = check_answer::<f64>("Find y: ", expected_y * -1.0, tolerance);
+    score_x && score_y
 }
 
 struct QuizzOptions {
