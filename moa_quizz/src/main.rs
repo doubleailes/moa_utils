@@ -115,21 +115,20 @@ fn distance_target(tolerance: f64, unit: Unit) -> bool {
         "Find the impact point of a shot with a drop of x {} cm and y {} cm",
         x, y
     );
+    // The grid 9 x 9, we offset of 4.0 unit to recenter
     let target = Target::new(x + 4.0, y + 4.0);
     println!("{}", target);
+    let angle_x:AngleType  = AngleDropDistance::from_drop_distance(x / 100.0, distance).get_angle();
+    let angle_y:AngleType  = AngleDropDistance::from_drop_distance(y / 100.0, distance).get_angle();
     match unit {
         Unit::Moa => {
-            let moa_x: f64 = MOADD::new_from_drop_distance(x / 100.0, distance).get_moa();
-            let moa_y: f64 = MOADD::new_from_drop_distance(y / 100.0, distance).get_moa();
-            let score_x = check_answer::<f64>("Find x: ", moa_x * -1.0, tolerance);
-            let score_y = check_answer::<f64>("Find y: ", moa_y * -1.0, tolerance);
+            let score_x = check_answer::<f64>("Find x: ", angle_x.get_moa() * -1.0, tolerance);
+            let score_y = check_answer::<f64>("Find y: ", angle_y.get_moa() * -1.0, tolerance);
             score_x && score_y
         }
         Unit::Mrad => {
-            let mrad_x: f64 = MRADDD::new_from_drop_distance(x / 100.0, distance).get_mrad();
-            let mrad_y: f64 = MRADDD::new_from_drop_distance(y / 100.0, distance).get_mrad();
-            let score_x = check_answer::<f64>("Find x: ", mrad_x * -1.0, tolerance);
-            let score_y = check_answer::<f64>("Find y: ", mrad_y * -1.0, tolerance);
+            let score_x = check_answer::<f64>("Find x: ", angle_x.get_mrad() * -1.0, tolerance);
+            let score_y = check_answer::<f64>("Find y: ", angle_y.get_mrad() * -1.0, tolerance);
             score_x && score_y
         }
     }
