@@ -1,5 +1,3 @@
-use std::f64::consts::PI;
-
 /// # AngleDropDistance
 /// A struct that guaranty the MOA (Minute of Angle) and drop of a bullet given a distance.
 ///
@@ -15,7 +13,7 @@ pub struct AngleDropDistance {
     drop: f64,
 }
 
-const MOA_TO_RAD: f64 = 1000.000000000000000000 * PI / (180.0000000000000000 * 60.0000000000000000);
+const MOA_TO_RAD: f64 = 0.29088820866572157;
 
 /// # AngleType
 /// An enum that represents the type of angle used in the calculation.
@@ -24,6 +22,14 @@ const MOA_TO_RAD: f64 = 1000.000000000000000000 * PI / (180.0000000000000000 * 6
 ///
 /// - **MOA** : The angle is in Minute of Angle. ( 1/60 of a degree )
 /// - **MIL** : The angle is in Milliradian. ( 1/1000 of a radian )
+///
+/// ## Conversion
+/// The conversion use the approximation of 1 MOA = 0.29088820866572157 mrad.
+///
+///
+/// - **get_moa** : Convert the angle to MOA.
+/// - **get_mrad** : Convert the angle to MIL.
+///
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AngleType {
     MOA(f64),
