@@ -118,19 +118,15 @@ fn distance_target(tolerance: f64, unit: Unit) -> bool {
     // The grid 9 x 9, we offset of 4.0 unit to recenter
     let target = Target::new(x + 4.0, y + 4.0);
     println!("{}", target);
-    let angle_x:AngleType  = AngleDropDistance::from_drop_distance(x / 100.0, distance).get_angle();
-    let angle_y:AngleType  = AngleDropDistance::from_drop_distance(y / 100.0, distance).get_angle();
-    let (expected_x, expected_y) =  match unit {
-        Unit::Moa => {
-            (angle_x.get_moa(), angle_y.get_moa())
-        }
-        Unit::Mrad => {
-            (angle_x.get_mrad(), angle_y.get_mrad())
-        }
+    // The input is exepected in cm so we divide by 100
+    let angle_x: AngleType = AngleDropDistance::from_drop_distance(x / 100.0, distance).get_angle();
+    let angle_y: AngleType = AngleDropDistance::from_drop_distance(y / 100.0, distance).get_angle();
+    let (expected_x, expected_y) = match unit {
+        Unit::Moa => (angle_x.get_moa(), angle_y.get_moa()),
+        Unit::Mrad => (angle_x.get_mrad(), angle_y.get_mrad()),
     };
-    let score_x: bool = check_answer::<f64>("Find x: ", expected_x * -1.0, tolerance);
-    let score_y: bool = check_answer::<f64>("Find y: ", expected_y * -1.0, tolerance);
-    score_x && score_y
+    check_answer::<f64>("Find x: ", expected_x * -1.0, tolerance)
+        && check_answer::<f64>("Find y: ", expected_y * -1.0, tolerance)
 }
 
 struct QuizzOptions {
@@ -171,7 +167,6 @@ fn quizz(quizzopt: QuizzOptions, tolerance: f64, number_of_questions: u32) {
                 }
             }
             Mode::Target => {
-
                 if distance_target(tolerance, quizzopt.unit) {
                     score += 1;
                 }
